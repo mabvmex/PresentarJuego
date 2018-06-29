@@ -11,7 +11,7 @@ var enemigosArreglo = [];
 var balasHuman = []; 
 var imagenes = {
     human: ('./images/characters/Humanity/Human-fighter_3.png'),   
-    alien: ('./images/characters/Covenant/Alien-spacecraft_3.png'),
+    alien: ('./images/characters/Covenant/Reverse-Alien-spacecraft_3.png'),
     alienEnemigo: ('./images/characters/Covenant/Alien-spacecraft_3.png'), // -> * REVISAR *
     humanfireball: ('./images/characters/Humanity/Human-fireball.png'),
     fondo: ('./images/bg/Outer Space.jpg')
@@ -181,9 +181,9 @@ function marcadorHumano(){
  //Esta función agrega al arreglo, pero no crea nada.
 function crearEnemigos() {
     if(cuadros % 10 === 0) {
-        var posy =  ((Math.random() * canvas.height-50));  //REGULAR en 'Y' - REVISAR 
         var posx = (Math.random() * (canvas.width/2)+512);
-        var enemigo = new Enemigos(posx, posy,imagenes.alienEnemigo);
+        var posy =  ((Math.random() * (canvas.height-70)+30)); 
+        var enemigo = new Enemigos(posx, posy, imagenes.alienEnemigo);
         enemigosArreglo.push(enemigo); 
     }; 
 } 
@@ -246,8 +246,5 @@ addEventListener('keydown', function (h){
  //      * KEY CODE * | SpaceBar: 32 | KeyW: 87 | KeyS: 83 | KeyL: 76 | keyF: 70 | keyX: 88 | ArrowDown: 40 | ArrowUP: 38 
 });
  
-
-
-
 
 // Miguel Angel Barrera Villeda. 29 de Junio de 2018. IronHack, Módulo 1 - El videoJuego Javascript.
