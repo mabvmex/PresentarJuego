@@ -172,7 +172,7 @@ function marcadorHumano(){
             ctx.font = '50px Retro';
             ctx.fillStyle = 'red';
             ctx.fillText("G A M E  O V E R", 250, 241);
-            $('#div').text(tiempo1);
+            $('#record').text("Score Player = " + tiempo1 + " points");
             gameover=false;
         }
 }
