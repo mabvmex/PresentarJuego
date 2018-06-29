@@ -4,11 +4,9 @@
     margin: 0;
   }
 
-  @font-face {
-    font-family: "8bits";
-    src: url('./images/RetroComputer.ttf') format("truetype");
-   }
-
+   @font-face { font-family: "Retro"; src: url('./images/RetroComputer.ttf') format("truetype"); }
+   @font-face { font-family: "8bits"; src: url('./images/8bit.ttf') format("truetype"); }
+   @font-face { font-family: "minecraft"; src: url('./images/Minecraft.ttf') format("truetype"); }
 
  body {
      background-color: black;
@@ -18,25 +16,46 @@
  }
 
 #canvas {
-    padding: 0;
-    margin: auto;
-    display: block;
-    position: absolute;
-    top: 0;
+    font-family: "minecraft";
+    display: flex;
+    position: relative;
+    margin: auto,0;
+    padding: auto, 0;
+    left: 10%;
+
+     /*
+    top: 30px;
     bottom: 0;
-    left: 0;
-    right: 0;;
+    left: 20px;
+    right: 0;; */
 }
-/*  */
+
 h1{
-    font-family: "8bits";
+    font-family: "minecraft";
     font-size: 50px;
     display: flex;
     position: relative;
+   align-self: center;
     justify-content: center;
     text-align: center;
-    color: white; 
+    /* color: springgreen;  */
+    color:rgb(184, 255, 30);
 }
-div{
-    color: white;
+div > .btn {
+    /* padding: 5; */
+    margin-top: 20px;
+    margin-left: 10px;
+    font-family: "8bits";
+    font-size: 13px;;
+    color: rgb(184, 255, 30);
+    background-color: transparent;
+}
+
+h5{
+    display: flex;
+    position: relative;
+    justify-content: center;
+    font-family: "retro";
+    font-size: 8px;
+    color: rgb(184, 255, 30);
 }
