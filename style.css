@@ -35,5 +35,8 @@ h1{
     position: relative;
     justify-content: center;
     text-align: center;
-    color: darkred; 
+    color: white; 
+}
+div{
+    color: white;
 }

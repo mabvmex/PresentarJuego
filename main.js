@@ -6,6 +6,11 @@ var ctx = canvas.getContext('2d');
 var interval;
 var cuadros;
 var enemigosArreglo = [];
+var balasHuman = []; 
+var balasAlien = [];
+//var paraBorrar = false;
+var gameover = true;
+var tiempo1 = 0;
 var imagenes = {
     human: ('./images/characters/Humanity/Human-fighter_3.png'),   
     humanEnemigo: ('./images/Characters/Humanity/Human-fighter_2.png'),   
@@ -75,11 +80,11 @@ draw(){
 
 class Human {
     constructor(){
+        this.vidas = 20;//100;
         this.width = 60;
         this.height = 60;
         this.x = 10;
         this.y = ((canvas.height/2) - (this.height/2)); // Posición inicial en el centro del mapa.
-        this.balas = []; 
         this.image = new Image();
         this.image.src = imagenes.human;
         this.image.onload = function(){
@@ -95,11 +100,11 @@ class Human {
 
     class Alien {
         constructor(){
+            this.vidas = 100;
             this.width = 60;
             this.height = 60;
             this.x = canvas.width-100;
             this.y = ((canvas.height/2)-(this.height/2));
-            this.balasAlien = []; 
             this.image = new Image();
             this.image.src = imagenes.alien;
             this.image.onload = function(){
@@ -112,13 +117,13 @@ class Human {
         }
     } //Termina la clase Alien
 
-
+//var img2 = "./images/characters/SpaceInvader.png"
     class Enemigos{
-        constructor(x=800, y, img){ 
+        constructor(x=800, y, img=img2){ 
           this.x = x
           this.y = y;
-          this.width = 50;
-          this.height = 50; 
+          this.width = 40;
+          this.height = 40; 
           this.image = new Image();
           this.image.src = img;
           this.image.onload = function(){
@@ -127,7 +132,7 @@ class Human {
         }
           draw() {
           this.x-=2;  // ELos obstáculos se mueven hacia el origen de X (x-2)
-          ctx.drawImage(this.image,this.x,this.y, this.width, this.height);
+          ctx.drawImage(this.image, this.x,this.y, this.width, this.height);
         }
       } //Termina la clase Enemigos
 
@@ -142,31 +147,82 @@ var alien = new Alien();
 
 //5. FUNCIONES PRINCIPALES
 function update(){
-    if(cuadros < 30 )cuadros++;
-    ctx.clearRect(0,0,canvas.width,canvas.height); 
-    mapa.draw();
-    human.draw();
-    alien.draw();
-    drawDisparo();
-    drawDisparoAlien();
-    crearEnemigos(); //Push tiene que etar antes de lo que dibuja.
-    drawEnemigos(); // dibuja el arreglo.
+    if (gameover==true){
+        cuadros++
+        //if(cuadros < 30 )cuadros++;
+        ctx.clearRect(0,0,canvas.width,canvas.height); 
+        mapa.draw();
+        human.draw();
+        alien.draw();
+        drawDisparo();
+        drawDisparoAlien();
+        crearEnemigos(); //Push tiene que etar antes de lo que dibuja.
+        drawEnemigos(); // dibuja el arreglo.
+        checkColision();
+        otroLado ();
+        marcadorHumano();
+        contadorTiempo1();
+    }
 }
 
 function start(){
-    interval = setInterval(update, 1000/60);
-    
+    cuadros = 0;
+    interval = setInterval(update, 1000/60);        
 }
 
 //6. FUNCIONES AUXILIARESv
+
+function contadorTiempo1(){
+    if(cuadros%25 == 0){
+        tiempo1 += 1;
+    }
+}
+
+// RESTAR VIDAS DE PLAYER
+
+function otroLado (){
+    enemigosArreglo.forEach(function(elemento, index){
+        console.log(elemento.x)
+        if(elemento.x < 0 ){
+            console.log("entramos al if");
+            human.vidas-= 0.5;
+            enemigosArreglo.splice(elemento,1);
+        }
+        console.log(human.vidas);
+    });
+}
+
+function marcadorHumano(){
+//console.human.vidas 
+        ctx.font = '50px Paytone One';
+        ctx.fillStyle = 'red';
+        ctx.fillText(human.vidas, 20, 100);
+        if (human.vidas < 0){
+            
+            ctx.fillText("GAME OVER "+tiempo1, 350, 350);
+            ctx.font = '50px Paytone One';
+            ctx.fillStyle = 'red';
+            $('#div').text(tiempo1);
+            
+           
+            gameover=false;
+            
+        }
+}
+
 //CREAR ENEMIGOS
 function crearEnemigos() { //Esta función mete al arreglo... pero no crea.
-    if (!(cuadros % 100 === 0)) return; //El diferente genera solo cuando sea difrente de 100, sin el , solo una vez
+    if(cuadros % 10 === 0) {
+        var posy =  (Math.random() * canvas.height);  // Math.floor((Math.random() * 10)+10);
+        var posx = (Math.random() * (canvas.width/2)+512);   //Math.floor((Math.random() * 10)+10);
+        var enemigo = new Enemigos(posx, posy,imagenes.alienEnemigo);
+        // console.log(posx)
+        // console.log(posy)
+        enemigosArreglo.push(enemigo); 
+        
+
+    }; //El diferente genera solo cuando sea difrente de 100, sin el , solo una vez
     //var x = Math.floor((Math.random() * 50)+20);
-    var posy = Math.floor((Math.random() * 10)+10);
-    var enemigo = new Enemigos(null,posy,imagenes.alienEnemigo);
-    enemigosArreglo.push(enemigo); 
-    console.log('creando Enemigos');
 } 
 
 
@@ -176,39 +232,60 @@ function drawEnemigos (){
         enemigosArreglo[i].draw();
     }
 }
-
  
 //SISTEMA DE COLISIONES
-// colisiones (element){
-//     return (this.x < element.x + element.width) &&  
-//            (this.x + this.width > element.x) &&     
-//            (this.y < element.y + element.height) && 
-//            (this.y + this.height > element.y);      
-// }
 
+function checkColision(){
+    enemigosArreglo.forEach(function(nave,index){
+    for (var i=0; i < balasHuman.length; i++){
+            if( nave.x < balasHuman[i].x + balasHuman[i].width && 
+                nave.x + nave.width > balasHuman[i].x && 
+                nave.y < balasHuman[i].y + balasHuman[i].height && 
+                nave.y + nave.height > balasHuman[i].y)
+                    { 
+                        balasHuman.splice(i,1);
+                        enemigosArreglo.splice(index,1);
+                    }
+            }
+    });
+}
+
+// funcion choque(indiceBala, indiceNave){ 
+//     //paraBorrar=false
+//}
+// });
+//}
 function crearDisparo(){
     var humanfireball = new Bala(human);
-    human.balas.push(humanfireball);  
+    balasHuman.push(humanfireball);  
     
 }
 function drawDisparo(){
-    human.balas.forEach(function(humanfireball){
+    balasHuman.forEach(function(humanfireball){
         humanfireball.draw();
     });
 }
 //  *  *  * ALIEN SIDE  *  *  *
 function crearDisparoAlien(){
     var alienfireball = new BalaAlien(alien);
-    alien.balasAlien.push(alienfireball);   
-    
+    //alien.balasAlien.push(alienfireball);   
+    balasAlien.push(alienfireball);   
 }
 function drawDisparoAlien(){
-        alien.balasAlien.forEach(function(alienfireball){
+        balasAlien.forEach(function(alienfireball){
         alienfireball.draw();
     });
 }
 
 //7. LISTENERS
+$('#start-button').click(function(){
+    start();
+});
+
+$('#reset-button').click(function(){
+     location.reload(); // Refresca la página
+})
+
 addEventListener('keydown', function (h){
     switch(h.keyCode) {
         case 87:                                                                //ArrowUp
@@ -245,14 +322,12 @@ addEventListener('keydown', function (h){
         }
     });
 
-start();
-
 
 /*
- multitudes
+ 
 multiplayer
 pantalla de seleccion
-Arrlglasr clases
+Arrelglasr clases
 */
 
 
